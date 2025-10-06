@@ -1,0 +1,62 @@
+;
+; kubearmor.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = kubearmor.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+kubearmor.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%kubearmor.DeviceDesc% = kubearmor_Device, Root\kubearmor ; TODO: edit hw-id
+
+[kubearmor_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+kubearmor.sys
+
+;-------------- Service installation
+[kubearmor_Device.NT.Services]
+AddService = kubearmor,%SPSVCINST_ASSOCSERVICE%, kubearmor_Service_Inst
+
+; -------------- kubearmor driver install sections
+[kubearmor_Service_Inst]
+DisplayName    = %kubearmor.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\kubearmor.sys
+
+[kubearmor_Device.NT.Wdf]
+KmdfService = kubearmor, kubearmor_wdfsect
+
+[kubearmor_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "kubearmor Installation Disk"
+kubearmor.DeviceDesc = "kubearmor Device"
+kubearmor.SVCDESC = "kubearmor Service"
