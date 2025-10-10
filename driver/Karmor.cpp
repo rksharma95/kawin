@@ -1,8 +1,10 @@
-#include "Globals.h"
-#include "DeviceIOCTL.h"
+#include "Filter.h"
 #include "ETW.h"
+#include "DeviceIOCTL.h"
+#include "Globals.h"
 
 Globals g_State;
+SCANNER_DATA g_ScannerData;
 BOOLEAN g_ProcessNotifyRegistered = FALSE, g_SymLinkCreated = FALSE;
 
 void OnProcessNotify(_Inout_ PEPROCESS Process, _In_ HANDLE ProcessId, _Inout_opt_ PPS_CREATE_NOTIFY_INFO CreateInfo);
@@ -47,16 +49,16 @@ VOID TestRuleApi() {
         KdPrint(("Rule not found\n"));
     }
 
-    KdPrint(("Removing rule...\n"));
+    /*KdPrint(("Removing rule...\n"));
     if (g_State.RemoveRule(&testPath)) {
         KdPrint(("Rule removed successfully\n"));
     }
     else {
         KdPrint(("Failed to remove rule\n"));
-    }
+    }*/
 
-    KdPrint(("Destroying Rule Hash Table...\n"));
-    g_State.DestroyRuleHashTable();
+   /* KdPrint(("Destroying Rule Hash Table...\n"));
+    g_State.DestroyRuleHashTable();*/
 }
 
 #ifdef __cplusplus
@@ -72,14 +74,20 @@ DriverEntry(PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath) {
 
     UNICODE_STRING devName = RTL_CONSTANT_STRING(L"\\Device\\Karmor");
     UNICODE_STRING symLink = RTL_CONSTANT_STRING(L"\\??\\Karmor");
+    UNICODE_STRING fltPort = RTL_CONSTANT_STRING(L"\\ScannerPort");
     PDEVICE_OBJECT DeviceObject = nullptr;
     auto status = STATUS_SUCCESS;
 
     do {
+        status = RegisterFilter(DriverObject);
+        if (!NT_SUCCESS(status)) {
+            KdPrint(("Failed to register Filter: (0x%x)\n", status));
+            return status;
+        }
 
         status = InitializeETW();
         if (!NT_SUCCESS(status)) {
-            KdPrint(("Failed to initialize ETW: 0x%x\n", status));
+            KdPrint(("Failed to initialize ETW: (0x%x)\n", status));
             CleanupETW();
             return status;
         }

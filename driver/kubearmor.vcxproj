@@ -89,6 +89,7 @@
     <ClCompile />
     <Link>
       <AdditionalOptions>/integritycheck %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>$(DDK_LIB_PATH)\fltMgr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -98,17 +99,24 @@
     <ClCompile />
     <Link>
       <AdditionalOptions>/integritycheck %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>$(DDK_LIB_PATH)\fltMgr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <DriverSign>
       <FileDigestAlgorithm>sha256</FileDigestAlgorithm>
     </DriverSign>
+    <Link>
+      <AdditionalDependencies>FltMgr.lib</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <DriverSign>
       <FileDigestAlgorithm>sha256</FileDigestAlgorithm>
     </DriverSign>
+    <Link>
+      <AdditionalDependencies>FltMgr.lib</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Inf Include="kubearmor.inf" />
@@ -120,6 +128,7 @@
     <ClInclude Include="DeviceIOCTL.h" />
     <ClInclude Include="ETW.h" />
     <ClInclude Include="FastMutex.h" />
+    <ClInclude Include="Filter.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="HashTable.h" />
     <ClInclude Include="KarmorLogs.h" />
@@ -127,6 +136,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FastMutex.cpp" />
+    <ClCompile Include="Filter.cpp" />
     <ClCompile Include="Globals.cpp" />
     <ClCompile Include="Karmor.cpp" />
     <ClCompile Include="Rule.cpp" />

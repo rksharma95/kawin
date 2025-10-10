@@ -1,4 +1,6 @@
 *.bin
 *.BIN
 .vs
-x64
+x64/
+Debug/
+minifilter-user/
