@@ -52,7 +52,7 @@ This document serves as a record of design decisions, open questions, and archit
 - manage rules in non-paged memory with minifilter driver
 - User-mode interface using `FltSendMessage`
 
-![High-level-architecture](./assets/kawin-arch.png)
+![High-level-architecture](./assets/kawin-arch.svg)
 
 ---
 
