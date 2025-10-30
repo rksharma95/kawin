@@ -1,0 +1,23 @@
+{
+    "host_name": "windows_host",
+    "service": {
+        "name": "KubeArmorUserService",
+        "worker_threads": "auto"
+    },
+    "driver": {
+        "filter_port_name": "\\ScannerPort",
+        "device_path": "\\??\\Karmor",
+        "worker_threads": "auto"
+    },
+    "grpc": {
+        "address": "0.0.0.0",
+        "port": 32767
+    },
+    "event_streaming": {
+        "max_queue_size": 10000
+    },
+    "logging": {
+        "file": "C:\\Users\\VC\\source\\repos\\kubearmor_service.log",
+        "level": "INFO"
+    }
+}

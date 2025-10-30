@@ -19,7 +19,7 @@ FLT_PREOP_CALLBACK_STATUS FLTAPI PreOperationCreate(
     PEVENT_REPLY eventReply = NULL;
     ULONG replyLength;
     LARGE_INTEGER timeOut = { 0 };
-    timeOut.QuadPart = -10 * 1000 * 1000; // 1 sec // -5000 * 1000; // 500 ms
+    timeOut.QuadPart = -10 * 1000 * 1000; // 1 sec
     PEPROCESS process = NULL;
     PUNICODE_STRING imagePath = NULL;
 
@@ -97,26 +97,37 @@ FLT_PREOP_CALLBACK_STATUS FLTAPI PreOperationCreate(
                 returnStatus = FLT_PREOP_COMPLETE;
                 __leave;
             }
+            ULONG currentOffset = sizeof(EVENT);
+            PUCHAR basePtr = (PUCHAR)event;
 
-            event->type = EventType_File;
+            event->type = EventType_HostLog;
+            event->operation = EventOperation_File;
+            KeQuerySystemTime((LARGE_INTEGER*)&event->timestamp);
+            event->blocked = false;
             event->data.File.ProcessId = (ULONG)(ULONG_PTR)PsGetCurrentProcessId();
+            event->data.File.Operation = 0;
 
             if (imagePath != NULL) {
-                PUCHAR stringPtr = (PUCHAR)(event + 1);
-                RtlCopyMemory(stringPtr, imagePath->Buffer, imagePath->Length);
-                event->data.File.ProcessPathOffset = sizeof(EVENT);
+                RtlCopyMemory(basePtr + currentOffset, imagePath->Buffer, imagePath->Length);
+                event->data.File.ProcessPathOffset = currentOffset;
                 event->data.File.ProcessPathLength = imagePath->Length;
+                currentOffset += imagePath->Length;
             }
             else {
+                event->data.File.ProcessPathOffset = 0;
+                event->data.File.ProcessPathLength = 0;
                 DbgPrint("!!! imagePath is NULL");
             }
 
             if (FltObjects->FileObject->FileName.Length > 0) {
-                PUCHAR stringPtr = (PUCHAR)(event + 1);
-                stringPtr += event->data.File.ProcessPathLength;
-                RtlCopyMemory(stringPtr, FltObjects->FileObject->FileName.Buffer, FltObjects->FileObject->FileName.Length);
+                RtlCopyMemory(basePtr + currentOffset, FltObjects->FileObject->FileName.Buffer, FltObjects->FileObject->FileName.Length);
                 event->data.File.FilePathLength = FltObjects->FileObject->FileName.Length;
-                event->data.File.FilePathOffset = sizeof(EVENT) + event->data.File.ProcessPathLength;
+                event->data.File.FilePathOffset = currentOffset;
+                currentOffset += FltObjects->FileObject->FileName.Length;
+            }
+            else {
+                event->data.File.FilePathLength = 0;
+                event->data.File.FilePathOffset = 0;
             }
 
             NTSTATUS status = FltSendMessage(g_ScannerData.Filter,
