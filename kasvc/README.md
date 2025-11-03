@@ -1,3 +1,4 @@
+```text
 KubeArmorUserService/
 |-- CMakeLists.txt
 |-- config.json
@@ -57,3 +58,8 @@ KubeArmorUserService/
     |---rpc
         |---feeder_event_publisher.cpp
         |---feeder_service.cpp
+```
+
+## Architecture Overview
+
+![High-level-architecture](../docs/assets/KubeArmorUserService.svg)
