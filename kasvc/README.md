@@ -63,3 +63,32 @@ KubeArmorUserService/
 ## Architecture Overview
 
 ![High-level-architecture](../docs/assets/KubeArmorUserService.svg)
+
+## Build
+
+### Prerequisites
+
+- cmake (min: VERSION 3.15)
+- gRPC
+
+### Build and Execute
+- create a build directory
+    ```
+    mkdir build
+    cd build
+    ```
+- generate build system files 
+    ```
+    cmake .. -G "Visual Studio 17 2022" -A x64 # change according to your build environment
+    ```
+- build executable
+    ```
+    cmake --build . --config Release
+    ```
+
+- successful build will create `.exe` file in `./Release` folder.
+
+- run the service
+    ```
+    KubeArmorUserService.exe <path-to-config.json> <- optional if config.json is in same directory 
+    ```
